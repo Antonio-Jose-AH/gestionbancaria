@@ -43,3 +43,42 @@ def crear_usuario():
     data.append(nuevo)
     guardar_bd(data)
     print("Cuenta creada correctamente.")
+
+def verificar_bloqueo(usuario):
+    if usuario["bloqueado_hasta"] == "":
+        return False
+    hoy = datetime.now().strftime("%Y-%m-%d")
+    return hoy < usuario["bloqueado_hasta"]
+
+def iniciar_sesion():
+    data = cargar_bd()
+    dni = input("DNI: ")
+    usuario = None
+    for u in data:
+        if u["dni"] == dni:
+            usuario = u
+            break
+    if usuario is None:
+        print("No existe un usuario con ese DNI.")
+        return None, data
+
+    if verificar_bloqueo(usuario):
+        print("Agotaste tus intentos, vuelva otro día.")
+        return None, data
+
+    intentos = 3
+    while intentos > 0:
+        pw = input("Contraseña: ")
+        if pw == usuario["password"]:
+            procesar_pendientes(usuario, data)
+            procesar_cobros_automaticos(usuario, data)
+            procesar_cobro_semanal(usuario, data)
+            guardar_bd(data)
+            return usuario, data
+        intentos -= 1
+
+    mañana = (datetime.now() + timedelta(days=1)).strftime("%Y-%m-%d")
+    usuario["bloqueado_hasta"] = mañana
+    guardar_bd(data)
+    print("Agotaste tus intentos, vuelva otro día.")
+    return None, data

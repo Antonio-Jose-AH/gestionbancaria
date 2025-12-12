@@ -113,10 +113,12 @@ def enviar_dinero(usuario, data):
         return
 
     destino = None
-    for u in data:
-        if u["dni"] == dni_dest:
-            destino = u
-            break
+    i = 0
+    while i < len(data) and destino is None:
+        if data[i]["dni"] == dni_dest:
+            destino = data[i]
+        i += 1
+
     if destino is None:
         print("No existe ese usuario.")
         return
@@ -164,15 +166,17 @@ def procesar_cobro_semanal(usuario, data):
     usuario["ult_cobro_banco"] = str(semanas)
 
 def crear_cobro_automatico(usuario, data):
-    dni = input("DNI del usuario a cobrar: ")
     destino = None
-    for u in data:
-        if u["dni"] == dni:
-            destino = u
-            break
+    i = 0
+    while i < len(data) and destino is None:
+        if data[i]["dni"] == dni:
+            destino = data[i]
+        i += 1
+
     if destino is None:
         print("No existe ese usuario.")
         return
+        
     cantidad = float(input("Cantidad: "))
     rep = int(input("Repeticiones: "))
     hoy = datetime.now().strftime("%Y-%m-%d")
@@ -210,7 +214,8 @@ def exportar_informacion(usuario, data):
     print("Archivo exportado.")
 
 def menu_usuario(usuario, data):
-    while True:
+    salir = False
+    while not salir:
         print("\n1. Ver saldo")
         print("2. Enviar dinero")
         print("3. Crear cobro automático")
@@ -219,37 +224,54 @@ def menu_usuario(usuario, data):
         print("6. Salir")
 
         op = input("> ")
+
         if op == "1":
             print("Saldo:", usuario["saldo"])
+
         elif op == "2":
             enviar_dinero(usuario, data)
             guardar_bd(data)
+
         elif op == "3":
             crear_cobro_automatico(usuario, data)
             guardar_bd(data)
+
         elif op == "4":
             ver_cobradores_activos(usuario)
+
         elif op == "5":
             exportar_informacion(usuario, data)
+
         elif op == "6":
             guardar_bd(data)
-            break
+            salir = True
+
+        else:
+            print("Opción no válida.")
+
 
 def main():
-    while True:
+    salir = False
+    while not salir:
         print("\n--- CachabanBank ---")
         print("1. Crear cuenta")
         print("2. Iniciar sesión")
         print("3. Salir")
         op = input("> ")
+
         if op == "1":
             crear_usuario()
+
         elif op == "2":
             usuario, data = iniciar_sesion()
             if usuario:
                 menu_usuario(usuario, data)
+
         elif op == "3":
-            break
+            salir = True
+
+        else:
+            print("Opción no válida.")
 
 if __name__ == "__main__":
     main()

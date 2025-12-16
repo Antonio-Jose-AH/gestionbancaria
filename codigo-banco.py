@@ -28,7 +28,11 @@ def guardar_bd(data):
 def crear_usuario():
     data = cargar_bd()
     nombre = input("Nombre: ")
-    dni = input("DNI: ")
+    dni = input("DNI: ").upper()
+    while not dni.isalnum():
+        print("Error: el DNI solo puede contener letras y números.")
+        dni = input("DNI: ").upper()
+
     contraseña = input("Contraseña: ")
 
     for u in data:

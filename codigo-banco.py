@@ -1,18 +1,9 @@
 import json
 import os
 from datetime import datetime, timedelta
+import time
 
 BD = "usuarios.json"
-
-def saludo():
-    hora = datetime.now().hour
-
-    if 6 <= hora < 12:
-        return "Buenos días ☀️"
-    elif 12 <= hora < 20:
-        return "Buenas tardes 🌤️"
-    else:
-        return "Buenas noches 🌙"
 
 def cargar_bd():
     if not os.path.exists(BD):
@@ -96,6 +87,30 @@ def iniciar_sesion():
     guardar_bd(data)
     print("Agotaste tus intentos, vuelva otro día.")
     return None, data
+
+def saludo():
+    hora = datetime.now().hour
+
+    if 6 <= hora < 12:
+        return "Buenos días ☀️"
+    elif 12 <= hora < 20:
+        return "Buenas tardes 🌤️"
+    else:
+        return "Buenas noches 🌙"
+
+def animacion_abrazo(delay=1):
+    frames = [
+        "(づ ◕‿◕ )づ",
+        "⊂( ◕‿◕ )⊃ ",
+        "╰( ◕‿◕ )╯ ",
+        "⊂( ◕‿◕ )⊃ ",
+        "⊂( ◕‿◕ ⊂)"
+    ]
+
+    while True:
+        for frame in frames:
+            print(f"\r{frame}", end="", flush=True)
+            time.sleep(delay)
 
 def procesar_pendientes(usuario, data):
     if not usuario["pendientes"]:
@@ -263,7 +278,8 @@ def menu_usuario(usuario, data):
         elif op == "6":
             guardar_bd(data)
             salir = True
-
+            animacion_abrazo(1)
+            
         else:
             print("Opción no válida.")
 
@@ -288,6 +304,7 @@ def main():
 
         elif op == "3":
             salir = True
+            animacion_abrazo(1)
 
         else:
             print("Opción no válida.")
